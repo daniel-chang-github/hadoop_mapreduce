@@ -99,6 +99,4 @@ hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
 -file reducer2.py -reducer "python reducer2.py" \
 -input /user/root/test_dir/output/all_accidents -output /user/root/test_dir/output/make_year_count
 
-## Hadoop Command Results
-
 
