@@ -14,6 +14,10 @@ A MapReduce job to track the history of important incidents after the initial sa
 |sbin/stop-dfs.sh   |stop   |stops local hadoop operations   |
 |sbin/start-dfs.sh   |start   |spins up distributed file system   |
 
+## Learning the Ropes of the HDP Sandbox
+### https://www.cloudera.com/tutorials/learning-the-ropes-of-the-hdp-sandbox.html
+
+
 ### How to Use
 1. Create input & output directoris:
 ```
@@ -43,7 +47,7 @@ hadoop jar contrib/streaming/hadoop-streaming-1.2.1.jar \
     -input output user/root/output/all_accidents -output user/root/output/make_year_count
 ```
 
-## 🚙🚙 The Data 🚙🚙
+## The Data
 *Stored as a CSV in HDFS*
 |Column   |Type   |Info |
 |---|---|---|
@@ -59,7 +63,6 @@ hadoop jar contrib/streaming/hadoop-streaming-1.2.1.jar \
 ## The Job: Map, Then Reduce
 1. `mapper1.py` takes in raw data from `stdin` ➡️ returns `vin_number`, (`incident_type`, `make`, `year`)
   ![image](https://user-images.githubusercontent.com/81652137/175794383-7c4851da-020c-48bc-b4c7-1b2124aaf481.png)
-
 2. `reducer1.py` takes in `mapper1.py`'s output ➡️ returns all expected details of each unique set of vin_num, make, year that have incident types of 'A' (or accidents)
   ![image](https://user-images.githubusercontent.com/81652137/175794418-208dd111-53bd-4312-a43d-5b53a25a671e.png)
 3. `mapper2.py` creates a composite key of make + year
@@ -67,27 +70,22 @@ hadoop jar contrib/streaming/hadoop-streaming-1.2.1.jar \
 4. `reducer2.py` compiles the incident count of each composite key to return the total count of each make & year with registered accidents (`incident_type` 'A')
   ![image](https://user-images.githubusercontent.com/81652137/175794518-05e1c804-342d-4f60-80ed-7c5114cbc665.png)
 
-### Testing
-$ `cat hadoop_mini_data.csv | python mapper1.py | sort` yielded:
+## Hadoop Command
 
-<img width="336" alt="Screen Shot 2021-11-11 at 5 14 43 PM" src="https://user-images.githubusercontent.com/65197541/141382287-727ca812-50a5-4fb5-a437-eea3cc22e4cd.png">
+hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
 
-**Why use sort?**
-Without using `sort` on the vin key (to mimic MapReduce's shuffle/sort functionality), `cat hadoop_mini_data.csv | python mapper1.py | python reducer1.py | python mapper2.py | python reducer2.py` returns an error:
+# Note we have to use the linux directory for python files which we uploaded 
+-file /mapper1.py -mapper  "python mapper1.py" \
+-file /reducer1.py -reducer "python reducer1.py" \
 
-<img width="746" alt="Screen Shot 2021-11-11 at 5 19 05 PM" src="https://user-images.githubusercontent.com/65197541/141382603-2ce0f5dc-17cd-4207-8a12-378ab122d96b.png">
+# Note for input and output used the HDFS directory
+-input /user/root/test_dir/data.csv -output /user/root/test_dir/output/all_accidents
 
+hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
+-file /tmp/mapper2.py -mapper "python mapper2.py" \
+-file /tmp/reducer2.py -reducer "python reducer2.py" \
+-input /user/root/test_dir/output/all_accidents -output /user/root/test_dir/output/make_year_count
 
-$ `cat hadoop_mini_data.csv | python mapper1.py | sort | python reducer1.py` yielded:
+## Hadoop Command Results
 
-<img width="310" alt="Screen Shot 2021-11-11 at 5 16 14 PM" src="https://user-images.githubusercontent.com/65197541/141382384-21b2bb64-afd8-4364-991d-cf2991f1c72d.png">
-
-$ `cat hadoop_mini_data.csv | python mapper1.py | sort | python reducer1.py | python mapper2.py | sort ` yielded:
-
-<img width="137" alt="Screen Shot 2021-11-11 at 5 17 46 PM" src="https://user-images.githubusercontent.com/65197541/141382500-954ff91a-089a-4927-b5d7-8b191ed3293a.png">
-
-
-$ `cat hadoop_mini_data.csv | python mapper1.py | sort | python reducer1.py | python mapper2.py | sort | python reducer2.py` yielded:
-
-<img width="162" alt="Screen Shot 2021-11-11 at 5 15 34 PM" src="https://user-images.githubusercontent.com/65197541/141382338-6df98a7b-6667-402e-b14a-db3d1bc2bf94.png">
 
