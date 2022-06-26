@@ -1,5 +1,6 @@
 # Hadoop Auto Report
-A MapReduce job to track the history of important incidents after the initial sales of a new cehicle.
+This project is to track the history of important incidents after the initial sales of a new vehicle using Hadoop.
+Cloudera's Hortonworks Data Platform was used to use Hadoop.
 
 ## A Quick Hadoop Refresher
 ### Basic Commands
@@ -94,8 +95,8 @@ hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
 -input /user/root/test_dir/data.csv -output /user/root/test_dir/output/all_accidents
 
 hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
--file /tmp/mapper2.py -mapper "python mapper2.py" \
--file /tmp/reducer2.py -reducer "python reducer2.py" \
+-file mapper2.py -mapper "python mapper2.py" \
+-file reducer2.py -reducer "python reducer2.py" \
 -input /user/root/test_dir/output/all_accidents -output /user/root/test_dir/output/make_year_count
 
 ## Hadoop Command Results
