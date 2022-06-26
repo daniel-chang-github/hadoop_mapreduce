@@ -62,23 +62,31 @@ hadoop jar contrib/streaming/hadoop-streaming-1.2.1.jar \
 
 ## The Job: Map, Then Reduce
 1. `mapper1.py` takes in raw data from `stdin` ➡️ returns `vin_number`, (`incident_type`, `make`, `year`)
+
+
   ![image](https://user-images.githubusercontent.com/81652137/175794383-7c4851da-020c-48bc-b4c7-1b2124aaf481.png)
 2. `reducer1.py` takes in `mapper1.py`'s output ➡️ returns all expected details of each unique set of vin_num, make, year that have incident types of 'A' (or accidents)
+
+
   ![image](https://user-images.githubusercontent.com/81652137/175794418-208dd111-53bd-4312-a43d-5b53a25a671e.png)
 3. `mapper2.py` creates a composite key of make + year
+
+
   ![image](https://user-images.githubusercontent.com/81652137/175794501-a09be50f-4545-4924-8ae6-ac16d6629461.png)
 4. `reducer2.py` compiles the incident count of each composite key to return the total count of each make & year with registered accidents (`incident_type` 'A')
+
+
   ![image](https://user-images.githubusercontent.com/81652137/175794518-05e1c804-342d-4f60-80ed-7c5114cbc665.png)
 
 ## Hadoop Command
 
 hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
 
-# Note we have to use the linux directory for python files which we uploaded 
+### Note we have to use the linux directory for python files which we uploaded 
 -file /mapper1.py -mapper  "python mapper1.py" \
 -file /reducer1.py -reducer "python reducer1.py" \
 
-# Note for input and output used the HDFS directory
+### Note for input and output used the HDFS directory
 -input /user/root/test_dir/data.csv -output /user/root/test_dir/output/all_accidents
 
 hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
